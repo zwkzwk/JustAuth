@@ -6,7 +6,7 @@
 
     <groupId>me.zhyd.oauth</groupId>
     <artifactId>JustAuth</artifactId>
-    <version>1.8.0</version>
+    <version>1.9.2</version>
 
     <name>JustAuth</name>
     <url>https://gitee.com/yadong.zhang/JustAuth</url>
@@ -30,7 +30,7 @@
 
     <developers>
         <developer>
-            <name>yadong.zhang</name>
+            <name>Yadong.Zhang</name>
             <email>yadong.zhang0415@gmail.com</email>
             <url>https://www.zhyd.me</url>
         </developer>
@@ -38,6 +38,11 @@
             <name>Yangkai.Shen</name>
             <email>shenyangkai1994@gmail.com</email>
             <url>https://xkcoding.com</url>
+        </developer>
+        <developer>
+            <name>Hongwei.Peng</name>
+            <email>pengisgood@gmail.com</email>
+            <url>https://github.com/pengisgood</url>
         </developer>
     </developers>
 
@@ -52,8 +57,9 @@
         <hutool-version>4.5.15</hutool-version>
         <lombok-version>1.18.4</lombok-version>
         <junit-version>4.11</junit-version>
-        <fastjson-version>1.2.44</fastjson-version>
+        <fastjson-version>1.2.58</fastjson-version>
         <alipay-sdk-version>3.7.4.ALL</alipay-sdk-version>
+        <slf4j-version>1.7.25</slf4j-version>
     </properties>
 
     <dependencies>
@@ -83,6 +89,11 @@
             <artifactId>alipay-sdk-java</artifactId>
             <version>${alipay-sdk-version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j-version}</version>
         </dependency>
     </dependencies>
 

@@ -6,7 +6,7 @@
 </p>
 <p align="center">
 	<a target="_blank" href="https://search.maven.org/search?q=JustAuth">
-		<img src="https://img.shields.io/badge/Maven Central-1.8.0-blue.svg" ></img>
+		<img src="https://img.shields.io/badge/Maven Central-1.9.2-blue.svg" ></img>
 	</a>
 	<a target="_blank" href="https://gitee.com/yadong.zhang/JustAuth/blob/master/LICENSE">
 		<img src="https://img.shields.io/apm/l/vim-mode.svg?color=yellow" ></img>
@@ -15,7 +15,7 @@
 		<img src="https://img.shields.io/badge/JDK-1.8+-green.svg" ></img>
 	</a>
 	<a target="_blank" href="https://apidoc.gitee.com/yadong.zhang/JustAuth/">
-		<img src="https://img.shields.io/badge/Docs-1.8.0-orange.svg" ></img>
+		<img src="https://img.shields.io/badge/Docs-1.9.2-orange.svg" ></img>
 	</a>
 </p>
 
@@ -37,10 +37,18 @@
             <td align="center" width="200"><a href="#授权google"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/google.png" width="20"></a></td>
             <td align="center" width="200"><a href="#授权facebook"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/facebook.png" width="20"></a></td>
             <td align="center" width="200"><a href="#授权抖音"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/douyin.png" width="20"></a></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
             <td align="center" width="200"><a href="#授权领英"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/linkedin.png" width="20"></a></td>
             <td align="center" width="200"><a href="#授权微软"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/microsoft.png" width="20"></a></td>
             <td align="center" width="200"><a href="#授权小米"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/mi.png" width="20"></a></td>
             <td align="center" width="200"><a href="#授权今日头条"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/toutiao.png" width="20"></a></td>
+            <td align="center" width="200"><a href="#授权Teambition"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/teambition.png" width="20"></a></td>
+            <td align="center" width="200"><a href="#授权人人"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/renren.png" width="20"></a></td>
+            <td align="center" width="200"><a href="#授权Pinterest"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/pinterest.png" width="20"></a></td>
+            <td align="center" width="200"><a href="#授权Stack Overflow"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/stackoverflow.png" width="20"></a></td>
             <td align="center" width="200"><a href="#授权csdn"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/csdn.png" width="20"></a></td>
         </tr>
     </table>
@@ -68,7 +76,7 @@ JustAuth，如你所见，它仅仅是一个**第三方授权登录**的**工具
 <dependency>
     <groupId>me.zhyd.oauth</groupId>
     <artifactId>JustAuth</artifactId>
-    <version>1.8.0</version>
+    <version>1.9.2</version>
 </dependency>
 ```
 - 调用api
@@ -88,12 +96,19 @@ authRequest.login(callback);
 
 注：`1.8.0`版本后，增加了`state`参数校验，用于防止[CSRF](https://zh.wikipedia.org/wiki/%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0)。强烈建议，保证单次流程内`state`的唯一性，且每个`state`只可用一次。
 
-**配套Demo**：[JustAuth-demo](https://gitee.com/yadong.zhang/JustAuth-demo)
+**配套Demo**：
+- [Springboot版](https://gitee.com/yadong.zhang/JustAuth-demo)
+- [jFinal版](https://github.com/zhangyd-c/jfinal-justauth-demo)
+
+**配套SpringBoot starter**：
+
+[justauth-spring-boot-starter](https://github.com/xkcoding/justauth-spring-boot-starter)
 
 具体的例子可以参考：
 
 - [实现Gitee授权登录](http://t.cn/ExDKxQs)
 - [实现Github授权登录](http://t.cn/EJ0Fxqo)
+- [Spring Boot 快速集成第三方登录功能](http://t.cn/AiWWx5kH)
 
 #### API列表
 |  :computer: 平台  |  :coffee: API类  |  :page_facing_up: SDK  |
@@ -117,6 +132,10 @@ authRequest.login(callback);
 |  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/microsoft.png" width="20">  | [AuthMicrosoftRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthMicrosoftRequest.java) | <a href="https://docs.microsoft.com/zh-cn/graph/auth/" target="_blank">参考文档</a> |
 |  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/mi.png" width="20">  | [AuthMiRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthMiRequest.java) | <a href="https://dev.mi.com/console/doc/detail?pId=711" target="_blank">参考文档</a> |
 |  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/toutiao.png" width="20">  | [AuthToutiaoRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthToutiaoRequest.java) | <a href="https://open.mp.toutiao.com/#/resource?_k=y7mfgk" target="_blank">参考文档</a> |
+|  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/teambition.png" width="20">  | [AuthTeambitionRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthTeambitionRequest.java) | <a href="https://docs.teambition.com/" target="_blank">参考文档</a> |
+|  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/renren.png" width="20">  | [AuthRenrenRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthRenrenRequest.java) | <a href="http://open.renren.com/wiki/OAuth2.0" target="_blank">参考文档</a> |
+|  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/pinterest.png" width="20">  | [AuthPinterestRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthPinterestRequest.java) | <a href="https://developers.pinterest.com/docs/api/overview/?" target="_blank">参考文档</a> |
+|  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/stackoverflow.png" width="20">  | [AuthStackOverflowRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthStackOverflowRequest.java) | <a href="https://api.stackexchange.com/docs/authentication" target="_blank">参考文档</a> |
 |  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/csdn.png" width="20">  |  [AuthCsdnRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthCsdnRequest.java)  |  无 |
 
 _请知悉：经咨询CSDN官方客服得知，CSDN的授权开放平台已经下线。如果以前申请过的应用，可以继续使用，但是不再支持申请新的应用。so, 本项目中的CSDN登录只能针对少部分用户使用了_
@@ -133,7 +152,7 @@ _请知悉：经咨询CSDN官方客服得知，CSDN的授权开放平台已经�
 2. 把fork过去的项目也就是你仓库中的项目clone到你的本地
 3. 修改代码
 4. commit后push到自己的库
-5. 发起PR（pull request） 请求
+5. 发起PR（pull request） 请求，提交到`dev`分支
 6. 等待作者合并
 
 ## 致谢
