@@ -3,6 +3,7 @@ package me.zhyd.oauth.request;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.enums.AuthUserGender;
 import me.zhyd.oauth.exception.AuthException;
@@ -19,8 +20,7 @@ import static me.zhyd.oauth.config.AuthSource.PINTEREST;
  * Pinterest登录
  *
  * @author hongwei.peng (pengisgood(at)gmail(dot)com)
- * @version 1.9.0
- * @since 1.8
+ * @since 1.9.0
  */
 public class AuthPinterestRequest extends AuthDefaultRequest {
 
@@ -28,6 +28,10 @@ public class AuthPinterestRequest extends AuthDefaultRequest {
 
     public AuthPinterestRequest(AuthConfig config) {
         super(config, PINTEREST);
+    }
+
+    public AuthPinterestRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, PINTEREST, authStateCache);
     }
 
     @Override
@@ -69,14 +73,21 @@ public class AuthPinterestRequest extends AuthDefaultRequest {
         return jsonObject.getJSONObject("60x60").getString("url");
     }
 
+    /**
+     * 返回带{@code state}参数的授权url，授权回调时会带上这个{@code state}
+     *
+     * @param state state 验证授权流程的参数，可以防止csrf
+     * @return 返回授权地址
+     * @since 1.9.3
+     */
     @Override
-    public String authorize() {
+    public String authorize(String state) {
         return UrlBuilder.fromBaseUrl(source.authorize())
             .queryParam("response_type", "code")
             .queryParam("client_id", config.getClientId())
             .queryParam("redirect_uri", config.getRedirectUri())
-            .queryParam("state", getRealState(config.getState()))
             .queryParam("scope", "read_public")
+            .queryParam("state", getRealState(state))
             .build();
     }
 
@@ -86,6 +97,7 @@ public class AuthPinterestRequest extends AuthDefaultRequest {
      * @param authToken token
      * @return 返回获取userInfo的url
      */
+    @Override
     protected String userInfoUrl(AuthToken authToken) {
         return UrlBuilder.fromBaseUrl(source.userInfo())
             .queryParam("access_token", authToken.getAccessToken())

@@ -3,23 +3,31 @@ package me.zhyd.oauth.request;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
+import me.zhyd.oauth.enums.AuthResponseStatus;
 import me.zhyd.oauth.enums.AuthUserGender;
 import me.zhyd.oauth.exception.AuthException;
-import me.zhyd.oauth.model.*;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.model.AuthResponse;
+import me.zhyd.oauth.model.AuthToken;
+import me.zhyd.oauth.model.AuthUser;
 
 /**
  * Teambition授权登录
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
- * @since 1.8
+ * @since 1.9.0
  */
 public class AuthTeambitionRequest extends AuthDefaultRequest {
 
     public AuthTeambitionRequest(AuthConfig config) {
         super(config, AuthSource.TEAMBITION);
+    }
+
+    public AuthTeambitionRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, AuthSource.TEAMBITION, authStateCache);
     }
 
     /**

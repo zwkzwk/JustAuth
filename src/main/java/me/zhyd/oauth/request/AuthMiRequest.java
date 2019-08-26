@@ -4,12 +4,17 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
+import me.zhyd.oauth.enums.AuthResponseStatus;
 import me.zhyd.oauth.enums.AuthUserGender;
 import me.zhyd.oauth.exception.AuthException;
-import me.zhyd.oauth.model.*;
+import me.zhyd.oauth.log.Log;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.model.AuthResponse;
+import me.zhyd.oauth.model.AuthToken;
+import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.utils.UrlBuilder;
 
 import java.text.MessageFormat;
@@ -18,15 +23,17 @@ import java.text.MessageFormat;
  * 小米登录
  *
  * @author yangkai.shen (https://xkcoding.com)
- * @version 1.5
- * @since 1.5
+ * @since 1.5.0
  */
-@Slf4j
 public class AuthMiRequest extends AuthDefaultRequest {
     private static final String PREFIX = "&&&START&&&";
 
     public AuthMiRequest(AuthConfig config) {
         super(config, AuthSource.MI);
+    }
+
+    public AuthMiRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, AuthSource.MI, authStateCache);
     }
 
     @Override
@@ -88,7 +95,7 @@ public class AuthMiRequest extends AuthDefaultRequest {
             JSONObject emailPhone = userEmailPhone.getJSONObject("data");
             authUser.setEmail(emailPhone.getString("email"));
         } else {
-            log.warn("小米开发平台暂时不对外开放用户手机及邮箱信息的获取");
+            Log.warn("小米开发平台暂时不对外开放用户手机及邮箱信息的获取");
         }
 
         return authUser;
@@ -109,19 +116,21 @@ public class AuthMiRequest extends AuthDefaultRequest {
     }
 
     /**
-     * 返回认证url，可自行跳转页面
+     * 返回带{@code state}参数的授权url，授权回调时会带上这个{@code state}
      *
+     * @param state state 验证授权流程的参数，可以防止csrf
      * @return 返回授权地址
+     * @since 1.9.3
      */
     @Override
-    public String authorize() {
+    public String authorize(String state) {
         return UrlBuilder.fromBaseUrl(source.authorize())
             .queryParam("response_type", "code")
             .queryParam("client_id", config.getClientId())
             .queryParam("redirect_uri", config.getRedirectUri())
-            .queryParam("state", getRealState(config.getState()))
             .queryParam("scope", "user/profile%20user/openIdV2%20user/phoneAndEmail")
             .queryParam("skip_confirm", "false")
+            .queryParam("state", getRealState(state))
             .build();
     }
 

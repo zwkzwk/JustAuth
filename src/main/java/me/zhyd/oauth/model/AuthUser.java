@@ -1,8 +1,6 @@
 package me.zhyd.oauth.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import me.zhyd.oauth.config.AuthSource;
 import me.zhyd.oauth.enums.AuthUserGender;
 
@@ -10,15 +8,18 @@ import me.zhyd.oauth.enums.AuthUserGender;
  * 授权成功后的用户信息，根据授权平台的不同，获取的数据完整性也不同
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
  * @since 1.8
  */
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthUser {
     /**
      * 用户第三方系统的唯一id。在调用方集成改组件时，可以用uuid + source唯一确定一个用户
+     *
+     * @since 1.3.3
      */
     private String uuid;
     /**

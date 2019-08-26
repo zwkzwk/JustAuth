@@ -2,6 +2,7 @@ package me.zhyd.oauth.request;
 
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
 import me.zhyd.oauth.enums.AuthUserGender;
@@ -15,13 +16,16 @@ import me.zhyd.oauth.utils.UrlBuilder;
  * Facebook登录
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
- * @since 1.8
+ * @since 1.3.0
  */
 public class AuthFacebookRequest extends AuthDefaultRequest {
 
     public AuthFacebookRequest(AuthConfig config) {
         super(config, AuthSource.FACEBOOK);
+    }
+
+    public AuthFacebookRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, AuthSource.FACEBOOK, authStateCache);
     }
 
     @Override

@@ -2,32 +2,42 @@ package me.zhyd.oauth.request;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import me.zhyd.oauth.cache.AuthDefaultStateCache;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
+import me.zhyd.oauth.enums.AuthResponseStatus;
 import me.zhyd.oauth.exception.AuthException;
-import me.zhyd.oauth.model.*;
+import me.zhyd.oauth.log.Log;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.model.AuthResponse;
+import me.zhyd.oauth.model.AuthToken;
+import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.utils.AuthChecker;
 import me.zhyd.oauth.utils.StringUtils;
 import me.zhyd.oauth.utils.UrlBuilder;
+import me.zhyd.oauth.utils.UuidUtils;
 
 /**
  * 默认的request处理类
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
  * @author yangkai.shen (https://xkcoding.com)
- * @version 1.0
- * @since 1.8
+ * @since 1.0.0
  */
-@Slf4j
 public abstract class AuthDefaultRequest implements AuthRequest {
     protected AuthConfig config;
     protected AuthSource source;
+    protected AuthStateCache authStateCache;
 
     public AuthDefaultRequest(AuthConfig config, AuthSource source) {
+        this(config, source, AuthDefaultStateCache.INSTANCE);
+    }
+
+    public AuthDefaultRequest(AuthConfig config, AuthSource source, AuthStateCache authStateCache) {
         this.config = config;
         this.source = source;
+        this.authStateCache = authStateCache;
         if (!AuthChecker.isSupportedAuth(config, source)) {
             throw new AuthException(AuthResponseStatus.PARAMETER_INCOMPLETE);
         }
@@ -35,25 +45,53 @@ public abstract class AuthDefaultRequest implements AuthRequest {
         AuthChecker.checkConfig(config, source);
     }
 
+    /**
+     * 获取access token
+     *
+     * @param authCallback 授权成功后的回调参数
+     * @return token
+     * @see AuthDefaultRequest#authorize()
+     * @see AuthDefaultRequest#authorize(String)
+     */
     protected abstract AuthToken getAccessToken(AuthCallback authCallback);
 
+    /**
+     * 使用token换取用户信息
+     *
+     * @param authToken token信息
+     * @return 用户信息
+     * @see AuthDefaultRequest#getAccessToken(AuthCallback)
+     */
     protected abstract AuthUser getUserInfo(AuthToken authToken);
 
+    /**
+     * 统一的登录入口。当通过{@link AuthDefaultRequest#authorize(String)}授权成功后，会跳转到调用方的相关回调方法中
+     * 方法的入参可以使用{@code AuthCallback}，{@code AuthCallback}类中封装好了OAuth2授权回调所需要的参数
+     *
+     * @param authCallback 用于接收回调参数的实体
+     * @return AuthResponse
+     */
     @Override
     public AuthResponse login(AuthCallback authCallback) {
         try {
-            AuthChecker.checkCode(source == AuthSource.ALIPAY ? authCallback.getAuth_code() : authCallback.getCode());
-            AuthChecker.checkState(authCallback.getState(), config.getState());
+            AuthChecker.checkCode(source, authCallback);
+            this.checkState(authCallback.getState());
 
             AuthToken authToken = this.getAccessToken(authCallback);
             AuthUser user = this.getUserInfo(authToken);
             return AuthResponse.builder().code(AuthResponseStatus.SUCCESS.getCode()).data(user).build();
         } catch (Exception e) {
-            log.error("Failed to login with oauth authorization.", e);
+            Log.error("Failed to login with oauth authorization.", e);
             return this.responseError(e);
         }
     }
 
+    /**
+     * 处理{@link AuthDefaultRequest#login(AuthCallback)} 发生异常的情况，统一响应参数
+     *
+     * @param e 具体的异常
+     * @return AuthResponse
+     */
     private AuthResponse responseError(Exception e) {
         int errorCode = AuthResponseStatus.FAILURE.getCode();
         if (e instanceof AuthException) {
@@ -63,17 +101,34 @@ public abstract class AuthDefaultRequest implements AuthRequest {
     }
 
     /**
-     * 返回认证url，可自行跳转页面
+     * 返回授权url，可自行跳转页面
+     * <p>
+     * 不建议使用该方式获取授权地址，不带{@code state}的授权地址，容易受到csrf攻击。
+     * 建议使用{@link AuthDefaultRequest#authorize(String)}方法生成授权地址，在回调方法中对{@code state}进行校验
      *
      * @return 返回授权地址
+     * @see AuthDefaultRequest#authorize(String)
      */
+    @Deprecated
     @Override
     public String authorize() {
+        return this.authorize(null);
+    }
+
+    /**
+     * 返回带{@code state}参数的授权url，授权回调时会带上这个{@code state}
+     *
+     * @param state state 验证授权流程的参数，可以防止csrf
+     * @return 返回授权地址
+     * @since 1.9.3
+     */
+    @Override
+    public String authorize(String state) {
         return UrlBuilder.fromBaseUrl(source.authorize())
             .queryParam("response_type", "code")
             .queryParam("client_id", config.getClientId())
             .queryParam("redirect_uri", config.getRedirectUri())
-            .queryParam("state", getRealState(config.getState()))
+            .queryParam("state", getRealState(state))
             .build();
     }
 
@@ -130,13 +185,18 @@ public abstract class AuthDefaultRequest implements AuthRequest {
     }
 
     /**
-     * 获取state，如果为空， 则默认去当前日期的时间戳
+     * 获取state，如果为空， 则默认取当前日期的时间戳
      *
      * @param state 原始的state
      * @return 返回不为null的state
      */
     protected String getRealState(String state) {
-        return StringUtils.isEmpty(state) ? String.valueOf(System.currentTimeMillis()) : state;
+        if (StringUtils.isEmpty(state)) {
+            state = UuidUtils.getUUID();
+        }
+        // 缓存state
+        authStateCache.cache(state, state);
+        return state;
     }
 
     /**
@@ -165,6 +225,7 @@ public abstract class AuthDefaultRequest implements AuthRequest {
      * @param authToken token封装
      * @return HttpResponse
      */
+    @Deprecated
     protected HttpResponse doPostUserInfo(AuthToken authToken) {
         return HttpRequest.post(userInfoUrl(authToken)).execute();
     }
@@ -185,6 +246,7 @@ public abstract class AuthDefaultRequest implements AuthRequest {
      * @param authToken token封装
      * @return HttpResponse
      */
+    @Deprecated
     protected HttpResponse doPostRevoke(AuthToken authToken) {
         return HttpRequest.post(revokeUrl(authToken)).execute();
     }
@@ -197,5 +259,17 @@ public abstract class AuthDefaultRequest implements AuthRequest {
      */
     protected HttpResponse doGetRevoke(AuthToken authToken) {
         return HttpRequest.get(revokeUrl(authToken)).execute();
+    }
+
+
+    /**
+     * 校验回调传回的state
+     *
+     * @param state {@code state}一定不为空
+     */
+    protected void checkState(String state) {
+        if (StringUtils.isEmpty(state) || !authStateCache.containsKey(state)) {
+            throw new AuthException(AuthResponseStatus.ILLEGAL_REQUEST);
+        }
     }
 }

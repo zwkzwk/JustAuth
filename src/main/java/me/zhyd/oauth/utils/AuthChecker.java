@@ -2,15 +2,15 @@ package me.zhyd.oauth.utils;
 
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
+import me.zhyd.oauth.enums.AuthResponseStatus;
 import me.zhyd.oauth.exception.AuthException;
-import me.zhyd.oauth.model.AuthResponseStatus;
+import me.zhyd.oauth.model.AuthCallback;
 
 /**
  * 授权配置类的校验器
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
- * @since 1.8
+ * @since 1.6.1-beta
  */
 public class AuthChecker {
 
@@ -20,6 +20,7 @@ public class AuthChecker {
      * @param config config
      * @param source source
      * @return true or false
+     * @since 1.6.1-beta
      */
     public static boolean isSupportedAuth(AuthConfig config, AuthSource source) {
         boolean isSupported = StringUtils.isNotEmpty(config.getClientId()) && StringUtils.isNotEmpty(config.getClientSecret()) && StringUtils.isNotEmpty(config.getRedirectUri());
@@ -29,6 +30,9 @@ public class AuthChecker {
         if (isSupported && AuthSource.STACK_OVERFLOW == source) {
             isSupported = StringUtils.isNotEmpty(config.getStackOverflowKey());
         }
+        if (isSupported && AuthSource.WECHAT_ENTERPRISE == source){
+            isSupported = StringUtils.isNotEmpty(config.getAgentId());
+        }
         return isSupported;
     }
 
@@ -37,6 +41,7 @@ public class AuthChecker {
      *
      * @param config config
      * @param source source
+     * @since 1.6.1-beta
      */
     public static void checkConfig(AuthConfig config, AuthSource source) {
         String redirectUri = config.getRedirectUri();
@@ -55,33 +60,22 @@ public class AuthChecker {
 
     /**
      * 校验回调传回的code
+     * <p>
+     * {@code v1.10.0}版本中改为传入{@code source}和{@code callback}，对于不同平台使用不同参数接受code的情况统一做处理
      *
-     * @param code 回调时传回的code
+     * @param source   当前授权平台
+     * @param callback 从第三方授权回调回来时传入的参数集合
+     * @since 1.8.0
      */
-    public static void checkCode(String code) {
+    public static void checkCode(AuthSource source, AuthCallback callback) {
+        String code = callback.getCode();
+        if (source == AuthSource.ALIPAY) {
+            code = callback.getAuth_code();
+        } else if (source == AuthSource.HUAWEI) {
+            code = callback.getAuthorization_code();
+        }
         if (StringUtils.isEmpty(code)) {
             throw new AuthException(AuthResponseStatus.ILLEGAL_CODE);
-        }
-    }
-
-    /**
-     * 校验state的合法性防止被CSRF
-     *
-     * @param newState      新的state，一般为回调时传回的state（可能被篡改）
-     * @param originalState 原始的state，发起授权时向第三方平台传递的state
-     */
-    public static void checkState(String newState, String originalState) {
-        // 如果原始state为空，表示当前平台未使用state
-        if (StringUtils.isEmpty(originalState)) {
-            return;
-        }
-        // 如果授权之前使用了state，但是回调时未返回state，则表示当前请求为非法的请求，可能正在被CSRF攻击
-        if (StringUtils.isEmpty(newState)) {
-            throw new AuthException(AuthResponseStatus.ILLEGAL_REQUEST);
-        }
-        // 如果授权前后的state不一致，则表示当前请求为非法的请求，新的state可能为伪造
-        if (!newState.equals(originalState)) {
-            throw new AuthException(AuthResponseStatus.ILLEGAL_REQUEST);
         }
     }
 }

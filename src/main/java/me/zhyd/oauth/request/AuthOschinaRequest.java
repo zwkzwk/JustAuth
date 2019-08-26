@@ -2,6 +2,7 @@ package me.zhyd.oauth.request;
 
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
 import me.zhyd.oauth.enums.AuthUserGender;
@@ -15,13 +16,16 @@ import me.zhyd.oauth.utils.UrlBuilder;
  * oschina登录
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
- * @since 1.8
+ * @since 1.0.0
  */
 public class AuthOschinaRequest extends AuthDefaultRequest {
 
     public AuthOschinaRequest(AuthConfig config) {
         super(config, AuthSource.OSCHINA);
+    }
+
+    public AuthOschinaRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, AuthSource.OSCHINA, authStateCache);
     }
 
     @Override
@@ -59,7 +63,7 @@ public class AuthOschinaRequest extends AuthDefaultRequest {
     /**
      * 返回获取accessToken的url
      *
-     * @param code
+     * @param code 授权回调时带回的授权码
      * @return 返回获取accessToken的url
      */
     @Override

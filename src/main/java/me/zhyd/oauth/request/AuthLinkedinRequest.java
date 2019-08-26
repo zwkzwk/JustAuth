@@ -5,11 +5,16 @@ import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
+import me.zhyd.oauth.enums.AuthResponseStatus;
 import me.zhyd.oauth.enums.AuthUserGender;
 import me.zhyd.oauth.exception.AuthException;
-import me.zhyd.oauth.model.*;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.model.AuthResponse;
+import me.zhyd.oauth.model.AuthToken;
+import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.utils.StringUtils;
 import me.zhyd.oauth.utils.UrlBuilder;
 
@@ -18,13 +23,16 @@ import me.zhyd.oauth.utils.UrlBuilder;
  * 领英登录
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
- * @since 1.8
+ * @since 1.4.0
  */
 public class AuthLinkedinRequest extends AuthDefaultRequest {
 
     public AuthLinkedinRequest(AuthConfig config) {
         super(config, AuthSource.LINKEDIN);
+    }
+
+    public AuthLinkedinRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, AuthSource.LINKEDIN, authStateCache);
     }
 
     @Override
@@ -113,7 +121,6 @@ public class AuthLinkedinRequest extends AuthDefaultRequest {
      * @return 用户的邮箱地址
      */
     private String getUserEmail(String accessToken) {
-        String email = null;
         HttpResponse emailResponse = HttpRequest.get("https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))")
             .header("Host", "api.linkedin.com")
             .header("Connection", "Keep-Alive")
@@ -182,18 +189,20 @@ public class AuthLinkedinRequest extends AuthDefaultRequest {
     }
 
     /**
-     * 返回认证url，可自行跳转页面
+     * 返回带{@code state}参数的授权url，授权回调时会带上这个{@code state}
      *
+     * @param state state 验证授权流程的参数，可以防止csrf
      * @return 返回授权地址
+     * @since 1.9.3
      */
     @Override
-    public String authorize() {
+    public String authorize(String state) {
         return UrlBuilder.fromBaseUrl(source.authorize())
             .queryParam("response_type", "code")
             .queryParam("client_id", config.getClientId())
             .queryParam("redirect_uri", config.getRedirectUri())
-            .queryParam("state", getRealState(config.getState()))
             .queryParam("scope", "r_liteprofile%20r_emailaddress%20w_member_social")
+            .queryParam("state", getRealState(state))
             .build();
     }
 

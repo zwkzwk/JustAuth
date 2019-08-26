@@ -6,7 +6,6 @@ import lombok.*;
  * JustAuth配置类
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
  * @since 1.8
  */
 @Getter
@@ -17,12 +16,12 @@ import lombok.*;
 public class AuthConfig {
 
     /**
-     * 客户端id：对应个平台的appKey
+     * 客户端id：对应各平台的appKey
      */
     private String clientId;
 
     /**
-     * 客户端Secret：对应个平台的appSecret
+     * 客户端Secret：对应各平台的appSecret
      */
     private String clientSecret;
 
@@ -46,16 +45,17 @@ public class AuthConfig {
     private boolean unionId;
 
     /**
-     * 一个神奇的参数，最好使用随机的不可测的内容，可以用来防止CSRF攻击
-     * <p>
-     * 1.8.0版本新增参数
-     */
-    private String state;
-
-    /**
      * Stack Overflow Key
      * <p>
-     * 1.9.0版本新增参数
+     *
+     * @since 1.9.0
      */
     private String stackOverflowKey;
+
+    /**
+     * 企业微信，授权方的网页应用ID
+     *
+     * @since 1.10.0
+     */
+    private String agentId;
 }

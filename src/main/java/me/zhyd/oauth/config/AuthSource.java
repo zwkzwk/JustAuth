@@ -1,13 +1,12 @@
 package me.zhyd.oauth.config;
 
+import me.zhyd.oauth.enums.AuthResponseStatus;
 import me.zhyd.oauth.exception.AuthException;
-import me.zhyd.oauth.model.AuthResponseStatus;
 
 /**
  * 各api需要的url， 用枚举类分平台类型管理
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
  * @since 1.0
  */
 public enum AuthSource {
@@ -518,6 +517,55 @@ public enum AuthSource {
         @Override
         public String userInfo() {
             return "https://api.stackexchange.com/2.2/me";
+        }
+    },
+
+    /**
+     * 华为
+     *
+     * @since 1.10.0
+     */
+    HUAWEI {
+        @Override
+        public String authorize() {
+            return "https://oauth-login.cloud.huawei.com/oauth2/v2/authorize";
+        }
+
+        @Override
+        public String accessToken() {
+            return "https://oauth-login.cloud.huawei.com/oauth2/v2/token";
+        }
+
+        @Override
+        public String userInfo() {
+            return "https://api.vmall.com/rest.php";
+        }
+
+        @Override
+        public String refresh() {
+            return "https://oauth-login.cloud.huawei.com/oauth2/v2/token";
+        }
+    },
+
+    /**
+     * 企业微信
+     *
+     * @since 1.10.0
+     */
+    WECHAT_ENTERPRISE {
+        @Override
+        public String authorize() {
+            return "https://open.work.weixin.qq.com/wwopen/sso/qrConnect";
+        }
+
+        @Override
+        public String accessToken() {
+            return "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
+        }
+
+        @Override
+        public String userInfo() {
+            return "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo";
         }
     };
 

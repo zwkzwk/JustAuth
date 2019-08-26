@@ -1,10 +1,11 @@
 package me.zhyd.oauth.exception;
 
-import me.zhyd.oauth.model.AuthResponseStatus;
+import me.zhyd.oauth.enums.AuthResponseStatus;
 
 /**
+ * JustAuth通用异常类
+ *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
  * @since 1.8
  */
 public class AuthException extends RuntimeException {

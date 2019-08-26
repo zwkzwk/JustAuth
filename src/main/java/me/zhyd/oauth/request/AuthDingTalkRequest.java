@@ -4,6 +4,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
 import me.zhyd.oauth.enums.AuthUserGender;
@@ -18,13 +19,16 @@ import me.zhyd.oauth.utils.UrlBuilder;
  * 钉钉登录
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
- * @since 1.8
+ * @since 1.0.0
  */
 public class AuthDingTalkRequest extends AuthDefaultRequest {
 
     public AuthDingTalkRequest(AuthConfig config) {
         super(config, AuthSource.DINGTALK);
+    }
+
+    public AuthDingTalkRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, AuthSource.DINGTALK, authStateCache);
     }
 
     @Override
@@ -58,18 +62,20 @@ public class AuthDingTalkRequest extends AuthDefaultRequest {
     }
 
     /**
-     * 返回认证url，可自行跳转页面
+     * 返回带{@code state}参数的授权url，授权回调时会带上这个{@code state}
      *
+     * @param state state 验证授权流程的参数，可以防止csrf
      * @return 返回授权地址
+     * @since 1.9.3
      */
     @Override
-    public String authorize() {
+    public String authorize(String state) {
         return UrlBuilder.fromBaseUrl(source.authorize())
             .queryParam("response_type", "code")
             .queryParam("appid", config.getClientId())
             .queryParam("scope", "snsapi_login")
             .queryParam("redirect_uri", config.getRedirectUri())
-            .queryParam("state", getRealState(config.getState()))
+            .queryParam("state", getRealState(state))
             .build();
     }
 

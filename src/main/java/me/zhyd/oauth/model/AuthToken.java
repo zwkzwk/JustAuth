@@ -1,7 +1,6 @@
 package me.zhyd.oauth.model;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +8,6 @@ import lombok.Setter;
  * 授权所需的token
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
  * @since 1.8
  */
 @Getter
@@ -36,5 +34,12 @@ public class AuthToken {
      */
     private String macAlgorithm;
     private String macKey;
+
+    /**
+     * 企业微信附带属性
+     *
+     * @since 1.10.0
+     */
+    private String code;
 
 }

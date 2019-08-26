@@ -2,13 +2,12 @@ package me.zhyd.oauth.model;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import me.zhyd.oauth.enums.AuthResponseStatus;
 
 /**
  * JustAuth统一授权响应类
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
  * @since 1.8
  */
 @Getter

@@ -6,7 +6,7 @@
 </p>
 <p align="center">
 	<a target="_blank" href="https://search.maven.org/search?q=JustAuth">
-		<img src="https://img.shields.io/badge/Maven Central-1.9.2-blue.svg" ></img>
+		<img src="https://img.shields.io/badge/Maven Central-1.10.1-blue.svg" ></img>
 	</a>
 	<a target="_blank" href="https://gitee.com/yadong.zhang/JustAuth/blob/master/LICENSE">
 		<img src="https://img.shields.io/apm/l/vim-mode.svg?color=yellow" ></img>
@@ -14,8 +14,20 @@
 	<a target="_blank" href="https://www.oracle.com/technetwork/java/javase/downloads/index.html">
 		<img src="https://img.shields.io/badge/JDK-1.8+-green.svg" ></img>
 	</a>
-	<a target="_blank" href="https://apidoc.gitee.com/yadong.zhang/JustAuth/">
-		<img src="https://img.shields.io/badge/Docs-1.9.2-orange.svg" ></img>
+	<a target="_blank" href="https://apidoc.gitee.com/yadong.zhang/JustAuth/" title="API文档">
+		<img src="https://img.shields.io/badge/Api Docs-1.10.1-orange.svg" ></img>
+	</a>
+	<a target="_blank" href="https://docs.justauth.whnb.wang" title="参考文档">
+		<img src="https://img.shields.io/badge/Docs-latest-blueviolet.svg" ></img>
+	</a>
+	<a href="https://codecov.io/gh/zhangyd-c/JustAuth">
+		<img src="https://codecov.io/gh/zhangyd-c/JustAuth/branch/master/graph/badge.svg" />
+	</a>
+	<a href='https://gitee.com/yadong.zhang/JustAuth/stargazers'>
+	  <img src='https://gitee.com/yadong.zhang/JustAuth/badge/star.svg?theme=white' alt='star'></img>
+	</a>
+	<a target="_blank" href='https://github.com/zhangyd-c/JustAuth'>
+		<img src="https://img.shields.io/github/stars/zhangyd-c/JustAuth.svg?style=social" alt="github star"></img>
 	</a>
 </p>
 
@@ -49,6 +61,8 @@
             <td align="center" width="200"><a href="#授权人人"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/renren.png" width="20"></a></td>
             <td align="center" width="200"><a href="#授权Pinterest"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/pinterest.png" width="20"></a></td>
             <td align="center" width="200"><a href="#授权Stack Overflow"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/stackoverflow.png" width="20"></a></td>
+            <td align="center" width="200"><a href="#授权华为"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/huawei.png" width="20"></a></td>
+            <td align="center" width="200"><a href="#授权微信企业版" title="微信企业版"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/wechat.png" width="20"></a></td>
             <td align="center" width="200"><a href="#授权csdn"><img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/csdn.png" width="20"></a></td>
         </tr>
     </table>
@@ -60,7 +74,8 @@
 
 JustAuth，如你所见，它仅仅是一个**第三方授权登录**的**工具类库**，它可以让我们脱离繁琐的第三方登录SDK，让登录变得**So easy!**
 
-项目开源地址：[gitee](https://gitee.com/yadong.zhang/JustAuth) | [github](https://github.com/zhangyd-c/JustAuth)
+项目开源地址：[gitee](https://gitee.com/yadong.zhang/JustAuth) | [github](https://github.com/zhangyd-c/JustAuth)    
+项目文档：[参考文档](https://docs.justauth.whnb.wang)
 
 ## 特点
 
@@ -76,7 +91,7 @@ JustAuth，如你所见，它仅仅是一个**第三方授权登录**的**工具
 <dependency>
     <groupId>me.zhyd.oauth</groupId>
     <artifactId>JustAuth</artifactId>
-    <version>1.9.2</version>
+    <version>1.10.1</version>
 </dependency>
 ```
 - 调用api
@@ -86,19 +101,22 @@ AuthRequest authRequest = new AuthGiteeRequest(AuthConfig.builder()
         .clientId("clientId")
         .clientSecret("clientSecret")
         .redirectUri("redirectUri")
-        .state("state")
         .build());
 // 生成授权页面
 authRequest.authorize();
 // 授权登录后会返回code（auth_code（仅限支付宝））、state，1.8.0版本后，可以用AuthCallback类作为回调接口的参数
+// 注：JustAuth默认保存state的时效为3分钟，3分钟内未使用则会自动清除过期的state
 authRequest.login(callback);
 ```
 
-注：`1.8.0`版本后，增加了`state`参数校验，用于防止[CSRF](https://zh.wikipedia.org/wiki/%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0)。强烈建议，保证单次流程内`state`的唯一性，且每个`state`只可用一次。
-
 **配套Demo**：
 - [Springboot版](https://gitee.com/yadong.zhang/JustAuth-demo)
-- [jFinal版](https://github.com/zhangyd-c/jfinal-justauth-demo)
+- [jFinal版](https://github.com/xkcoding/jfinal-justauth-demo)
+- [ActFramework版](https://github.com/xkcoding/act-justauth-demo)
+
+**扩展工具**
+
+- [justauth-spring-boot-starter](https://github.com/xkcoding/justauth-spring-boot-starter): Spring Boot 集成 JustAuth 的最佳实践
 
 **配套SpringBoot starter**：
 
@@ -136,6 +154,8 @@ authRequest.login(callback);
 |  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/renren.png" width="20">  | [AuthRenrenRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthRenrenRequest.java) | <a href="http://open.renren.com/wiki/OAuth2.0" target="_blank">参考文档</a> |
 |  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/pinterest.png" width="20">  | [AuthPinterestRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthPinterestRequest.java) | <a href="https://developers.pinterest.com/docs/api/overview/?" target="_blank">参考文档</a> |
 |  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/stackoverflow.png" width="20">  | [AuthStackOverflowRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthStackOverflowRequest.java) | <a href="https://api.stackexchange.com/docs/authentication" target="_blank">参考文档</a> |
+|  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/huawei.png" width="20">  | [AuthHuaweiRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthHuaweiRequest.java) | <a href="https://developer.huawei.com/consumer/cn/devservice/doc/30101" target="_blank">参考文档</a> |
+|  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/wechat.png" width="20">  | [AuthWeChatEnterpriseRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthWeChatEnterpriseRequest.java) | <a href="https://open.work.weixin.qq.com/api/doc#90000/90135/90664" target="_blank">参考文档</a> |
 |  <img src="https://gitee.com/yadong.zhang/static/raw/master/JustAuth/csdn.png" width="20">  |  [AuthCsdnRequest](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/request/AuthCsdnRequest.java)  |  无 |
 
 _请知悉：经咨询CSDN官方客服得知，CSDN的授权开放平台已经下线。如果以前申请过的应用，可以继续使用，但是不再支持申请新的应用。so, 本项目中的CSDN登录只能针对少部分用户使用了_
@@ -163,9 +183,12 @@ _请知悉：经咨询CSDN官方客服得知，CSDN的授权开放平台已经�
 
 [阿里妈妈MUX倾力打造的矢量图标库-iconfont](https://www.iconfont.cn/search/index): 本文档中的图标大部分取自该平台
 
+[mica](https://github.com/lets-mica/mica)：Spring Cloud 微服务开发核心包，支持 `web `和 `webflux`。注：JustAuth项目中的[UuidUtils](https://gitee.com/yadong.zhang/JustAuth/blob/master/src/main/java/me/zhyd/oauth/utils/UuidUtils.java)就是直接使用的mica提供的高性能的uuid创建工具类源码[StringUtil.java](https://github.com/lets-mica/mica/blob/master/mica-core/src/main/java/net/dreamlu/mica/core/utils/StringUtil.java#L335)
+
 ## 关于OAuth
 
-[The OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749)
+- [The OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749)
+- [OAuth 2.0](https://oauth.net/2/)
 
 ## 关注&交流
 
@@ -177,7 +200,7 @@ _请知悉：经咨询CSDN官方客服得知，CSDN的授权开放平台已经�
 
 - JustAuth交流群 （230017570）：专业交流该项目
 
-- 开源总群 （190886500）：各个开源项目的都有，也有博客建设等方面的朋友。（注意，该群需付费进入，防止发垃圾广告、垃圾推广等人士）
+- 开源总群 （190886500）：各个开源项目的都有，也有博客建设等方面的朋友。
 
 
 ## 请喝咖啡

@@ -3,11 +3,16 @@ package me.zhyd.oauth.request;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
+import me.zhyd.oauth.enums.AuthResponseStatus;
 import me.zhyd.oauth.enums.AuthUserGender;
 import me.zhyd.oauth.exception.AuthException;
-import me.zhyd.oauth.model.*;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.model.AuthResponse;
+import me.zhyd.oauth.model.AuthToken;
+import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.utils.UrlBuilder;
 
 import static me.zhyd.oauth.utils.GlobalAuthUtil.parseQueryToMap;
@@ -16,12 +21,15 @@ import static me.zhyd.oauth.utils.GlobalAuthUtil.parseQueryToMap;
  * 微软登录
  *
  * @author yangkai.shen (https://xkcoding.com)
- * @version 1.5
- * @since 1.5
+ * @since 1.5.0
  */
 public class AuthMicrosoftRequest extends AuthDefaultRequest {
     public AuthMicrosoftRequest(AuthConfig config) {
         super(config, AuthSource.MICROSOFT);
+    }
+
+    public AuthMicrosoftRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, AuthSource.MICROSOFT, authStateCache);
     }
 
     @Override
@@ -102,26 +110,28 @@ public class AuthMicrosoftRequest extends AuthDefaultRequest {
     }
 
     /**
-     * 返回认证url，可自行跳转页面
+     * 返回带{@code state}参数的授权url，授权回调时会带上这个{@code state}
      *
+     * @param state state 验证授权流程的参数，可以防止csrf
      * @return 返回授权地址
+     * @since 1.9.3
      */
     @Override
-    public String authorize() {
+    public String authorize(String state) {
         return UrlBuilder.fromBaseUrl(source.authorize())
             .queryParam("response_type", "code")
             .queryParam("client_id", config.getClientId())
             .queryParam("redirect_uri", config.getRedirectUri())
             .queryParam("response_mode", "query")
             .queryParam("scope", "offline_access%20user.read%20mail.read")
-            .queryParam("state", getRealState(config.getState()))
+            .queryParam("state", getRealState(state))
             .build();
     }
 
     /**
      * 返回获取accessToken的url
      *
-     * @param code
+     * @param code 授权code
      * @return 返回获取accessToken的url
      */
     @Override

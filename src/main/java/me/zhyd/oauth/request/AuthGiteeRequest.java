@@ -2,6 +2,7 @@ package me.zhyd.oauth.request;
 
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
 import me.zhyd.oauth.enums.AuthUserGender;
@@ -14,13 +15,16 @@ import me.zhyd.oauth.model.AuthUser;
  * Gitee登录
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
- * @version 1.0
- * @since 1.8
+ * @since 1.0.0
  */
 public class AuthGiteeRequest extends AuthDefaultRequest {
 
     public AuthGiteeRequest(AuthConfig config) {
         super(config, AuthSource.GITEE);
+    }
+
+    public AuthGiteeRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, AuthSource.GITEE, authStateCache);
     }
 
     @Override

@@ -4,11 +4,16 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
+import me.zhyd.oauth.cache.AuthStateCache;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.config.AuthSource;
+import me.zhyd.oauth.enums.AuthResponseStatus;
 import me.zhyd.oauth.enums.AuthUserGender;
 import me.zhyd.oauth.exception.AuthException;
-import me.zhyd.oauth.model.*;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.model.AuthResponse;
+import me.zhyd.oauth.model.AuthToken;
+import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.utils.GlobalAuthUtil;
 import me.zhyd.oauth.utils.StringUtils;
 import me.zhyd.oauth.utils.UrlBuilder;
@@ -20,12 +25,15 @@ import java.util.Map;
  *
  * @author yadong.zhang (yadong.zhang0415(a)gmail.com)
  * @author yangkai.shen (https://xkcoding.com)
- * @version 1.0
- * @since 1.8
+ * @since 1.1.0
  */
 public class AuthQqRequest extends AuthDefaultRequest {
     public AuthQqRequest(AuthConfig config) {
         super(config, AuthSource.QQ);
+    }
+
+    public AuthQqRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, AuthSource.QQ, authStateCache);
     }
 
     @Override
@@ -37,10 +45,7 @@ public class AuthQqRequest extends AuthDefaultRequest {
     @Override
     public AuthResponse refresh(AuthToken authToken) {
         HttpResponse response = HttpRequest.get(refreshTokenUrl(authToken.getRefreshToken())).execute();
-        return AuthResponse.builder()
-            .code(AuthResponseStatus.SUCCESS.getCode())
-            .data(getAuthToken(response))
-            .build();
+        return AuthResponse.builder().code(AuthResponseStatus.SUCCESS.getCode()).data(getAuthToken(response)).build();
     }
 
     @Override
@@ -69,6 +74,13 @@ public class AuthQqRequest extends AuthDefaultRequest {
             .build();
     }
 
+    /**
+     * 获取QQ用户的OpenId，支持自定义是否启用查询unionid的功能，如果启用查询unionid的功能，
+     * 那就需要调用者先通过邮件申请unionid功能，参考链接 {@see http://wiki.connect.qq.com/unionid%E4%BB%8B%E7%BB%8D}
+     *
+     * @param authToken 通过{@link AuthQqRequest#getAccessToken(AuthCallback)}获取到的{@code authToken}
+     * @return openId
+     */
     private String getOpenId(AuthToken authToken) {
         HttpResponse response = HttpRequest.get(UrlBuilder.fromBaseUrl("https://graph.qq.com/oauth2.0/me")
             .queryParam("access_token", authToken.getAccessToken())
